@@ -1,16 +1,19 @@
 import { LayoutDashboard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import type { ChartData } from "@/utils/mockApi";
+import type { ChartData } from "@/services/api";
 import ChartCard from "./ChartCard";
+import InsightCard from "./InsightCard";
 
 interface DashboardGridProps {
   charts: ChartData[];
+  insights: string;
   isLoading: boolean;
 }
 
-/** Skeleton loading card */
 const SkeletonCard = ({ wide }: { wide?: boolean }) => (
-  <div className={`glass-panel rounded-2xl p-5 ${wide ? "col-span-1 lg:col-span-2" : "col-span-1"}`}>
+  <div
+    className={`glass-panel rounded-2xl p-5 ${wide ? "col-span-1 lg:col-span-2" : "col-span-1"}`}
+  >
     <div className="h-4 w-32 rounded bg-muted animate-pulse mb-2" />
     <div className="h-3 w-48 rounded bg-muted animate-pulse mb-6" />
     <div className="h-52 rounded-lg bg-muted/60 animate-pulse relative overflow-hidden">
@@ -19,9 +22,7 @@ const SkeletonCard = ({ wide }: { wide?: boolean }) => (
   </div>
 );
 
-/** Right panel — renders chart grid or empty/loading states */
-const DashboardGrid = ({ charts, isLoading }: DashboardGridProps) => {
-  // Loading state
+const DashboardGrid = ({ charts, insights, isLoading }: DashboardGridProps) => {
   if (isLoading) {
     return (
       <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -33,7 +34,6 @@ const DashboardGrid = ({ charts, isLoading }: DashboardGridProps) => {
     );
   }
 
-  // Empty state
   if (charts.length === 0) {
     return (
       <div className="flex h-full items-center justify-center p-6">
@@ -49,18 +49,18 @@ const DashboardGrid = ({ charts, isLoading }: DashboardGridProps) => {
             No dashboard yet
           </h3>
           <p className="text-sm text-muted-foreground">
-            Ask a question to generate your dashboard.
+            Ask a question in the chat to generate interactive visualizations.
           </p>
         </motion.div>
       </div>
     );
   }
 
-  // Charts grid
   return (
     <div className="p-6 overflow-y-auto">
       <AnimatePresence>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {insights && <InsightCard insights={insights} />}
           {charts.map((chart, i) => (
             <ChartCard key={`${chart.title}-${i}`} chart={chart} index={i} />
           ))}
